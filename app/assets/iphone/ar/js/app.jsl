@@ -108,13 +108,20 @@ var Overlays = {
 		var scaleFactor = 1/60;
 		
 		for(var i = 0; i < Overlays.existingLocations.length; i++) {
-			var overlayLocation = new AR.GeoLocation(latitude + Overlays.existingLocations[i][0] * scaleFactor, longitude + Overlays.existingLocations[i][1] * scaleFactor, altitude + Overlays.existingLocations[i][2] * scaleFactor);
-			var overlayDrawable = new AR.ImageDrawable(Overlays.challengeOverlayResource, 5.5, {
+			var overlayLocation = new AR.GeoLocation(
+				latitude + Overlays.existingLocations[i][0] * scaleFactor,
+				longitude + Overlays.existingLocations[i][1] * scaleFactor,
+				altitude + Overlays.existingLocations[i][2] * scaleFactor
+			);
+			var overlayDrawable = new AR.ImageDrawable(
+				Overlays.challengeOverlayResource, 5.5, {
 				opacity: 0.5
 			});
 			
     		var overlayObject = new AR.GeoObject(overlayLocation, {
-    			drawables : { cam : [overlayDrawable] }
+    			drawables: {
+					cam: [overlayDrawable] 
+				}
   			});
   			
     		Overlays.existing.push(overlayObject);
