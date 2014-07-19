@@ -13,3 +13,7 @@ if (architectWindow.isDeviceSupported()) {
 } else {
     alert('not supported');
 }
+
+setTimeout(function() {
+	architectWindow.close();
+}, 5000);

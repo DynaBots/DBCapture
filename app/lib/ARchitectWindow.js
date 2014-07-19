@@ -58,8 +58,6 @@ function ARchitectWindow(WikitudeLicenseKey, augmentedRealityMode, url) {
         });
     }
 
-
-
     /* ARchitect */
     this.window.loadArchitectWorldFromURL = this.loadArchitectWorldFromURL;
 
@@ -175,7 +173,7 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
     if (uri.host() == "button") {
     	switch( uri.query().getParamValue("action") ) {
 			case "captureScreen":
-				this.captureScreen(true, null, { // "Path/In/Bundle/toImage.png"
+				this.arview.captureScreen(true, null, { // "Path/In/Bundle/toImage.png"
 		            onSuccess: function(path) {
 		                alert('success: ' + path);
 		            },
@@ -183,6 +181,9 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
 		                alert('error: ' + errorDescription);
 		            }
 		        });
+				break;
+			case "close":
+				this.close();
 				break;
 			default:
 				alert("No valid action");
@@ -193,10 +194,14 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
 
 
 ARchitectWindow.prototype.onWindowOpen = function() {
-
+	var self = this;
+	
     this.getChildren()[0].add(this.arview); // get the main view for this window and add the ar view
-
-    this.arview.addEventListener('URL_WAS_INVOKED', this.onURLWasInvoked); // add an event listener for architectsdk:// url schemes (inside the ARchitect World)
+	
+	// add an event listener for architectsdk:// url schemes (inside the ARchitect World)
+    this.arview.addEventListener('URL_WAS_INVOKED', function(event) {
+    	self.onURLWasInvoked.call(self, event);
+    });
 
     if (this.util.isAndroid()) {
 

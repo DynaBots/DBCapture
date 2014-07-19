@@ -117,7 +117,7 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
     var uri = new jsuri.Uri(event.url);
     if ("button" == uri.host()) switch (uri.query().getParamValue("action")) {
       case "captureScreen":
-        this.captureScreen(true, null, {
+        this.arview.captureScreen(true, null, {
             onSuccess: function(path) {
                 alert("success: " + path);
             },
@@ -127,14 +127,21 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
         });
         break;
 
+      case "close":
+        this.close();
+        break;
+
       default:
         alert("No valid action");
     }
 };
 
 ARchitectWindow.prototype.onWindowOpen = function() {
+    var self = this;
     this.getChildren()[0].add(this.arview);
-    this.arview.addEventListener("URL_WAS_INVOKED", this.onURLWasInvoked);
+    this.arview.addEventListener("URL_WAS_INVOKED", function(event) {
+        self.onURLWasInvoked.call(self, event);
+    });
     if (this.util.isAndroid()) {
         Titanium.Geolocation.distanceFilter = 1;
         var _this = this;

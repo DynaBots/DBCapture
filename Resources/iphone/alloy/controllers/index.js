@@ -44,6 +44,9 @@ function Controller() {
         architectWindow.loadArchitectWorldFromURL("ar/index.html");
         architectWindow.open();
     } else alert("not supported");
+    setTimeout(function() {
+        architectWindow.close();
+    }, 5e3);
     __defers["$.__views.label!click!doClick"] && $.__views.label.addEventListener("click", doClick);
     _.extend($, exports);
 }
