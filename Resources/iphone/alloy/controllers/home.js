@@ -8,8 +8,14 @@ function __processArg(obj, key) {
 }
 
 function Controller() {
+    function doClick() {
+        var view = Alloy.createController("capture").getView();
+        view.open({
+            transition: Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
+        });
+    }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
-    this.__controllerPath = "index";
+    this.__controllerPath = "home";
     if (arguments[0]) {
         __processArg(arguments[0], "__parentSymbol");
         __processArg(arguments[0], "$model");
@@ -17,21 +23,20 @@ function Controller() {
     }
     var $ = this;
     var exports = {};
-    $.__views.index = Ti.UI.createWindow({
-        backgroundColor: "white",
-        id: "index"
-    });
-    $.__views.index && $.addTopLevelView($.__views.index);
+    var __defers = {};
     $.__views.home = Ti.UI.createView({
-        backgroundColor: "white",
         id: "home"
     });
-    $.__views.index.add($.__views.home);
+    $.__views.home && $.addTopLevelView($.__views.home);
+    $.__views.label = Ti.UI.createLabel({
+        text: "Hello, World",
+        id: "label"
+    });
+    $.__views.home.add($.__views.label);
+    doClick ? $.__views.label.addEventListener("click", doClick) : __defers["$.__views.label!click!doClick"] = true;
     exports.destroy = function() {};
     _.extend($, $.__views);
-    $.index.open();
-    var view = Alloy.createController("capture").getView();
-    $.index.open(view);
+    __defers["$.__views.label!click!doClick"] && $.__views.label.addEventListener("click", doClick);
     _.extend($, exports);
 }
 

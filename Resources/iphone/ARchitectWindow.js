@@ -117,7 +117,7 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
     var uri = new jsuri.Uri(event.url);
     if ("button" == uri.host()) switch (uri.query().getParamValue("action")) {
       case "captureScreen":
-        this.arview.captureScreen(true, null, {
+        this.arview.captureScreen(false, null, {
             onSuccess: function(path) {
                 alert("success: " + path);
             },

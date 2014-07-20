@@ -9,7 +9,7 @@ function __processArg(obj, key) {
 
 function Controller() {
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
-    this.__controllerPath = "index";
+    this.__controllerPath = "capture";
     if (arguments[0]) {
         __processArg(arguments[0], "__parentSymbol");
         __processArg(arguments[0], "$model");
@@ -17,21 +17,18 @@ function Controller() {
     }
     var $ = this;
     var exports = {};
-    $.__views.index = Ti.UI.createWindow({
-        backgroundColor: "white",
-        id: "index"
+    $.__views.capture = Ti.UI.createView({
+        id: "capture"
     });
-    $.__views.index && $.addTopLevelView($.__views.index);
-    $.__views.home = Ti.UI.createView({
-        backgroundColor: "white",
-        id: "home"
-    });
-    $.__views.index.add($.__views.home);
+    $.__views.capture && $.addTopLevelView($.__views.capture);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    $.index.open();
-    var view = Alloy.createController("capture").getView();
-    $.index.open(view);
+    var ARchitectWindow = require("ARchitectWindow");
+    var architectWindow = new ARchitectWindow(Alloy.Globals.WikitudeLicenseKey, "IrAndGeo");
+    if (architectWindow.isDeviceSupported()) {
+        architectWindow.loadArchitectWorldFromURL("ar/index.html");
+        architectWindow.open();
+    } else alert("not supported");
     _.extend($, exports);
 }
 

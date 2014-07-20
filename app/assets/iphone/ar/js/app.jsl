@@ -5,79 +5,51 @@ var currentLocation = {
 	"accuracy": null
 };
 
-// AR.context.onLocationChanged = function(latitude, longitude, altitude, accuracy) {
-	// currentLocation.latitude  = latitude;
-	// currentLocation.longitude = longitude;
-	// currentLocation.altitude = altitude;
-	// currentLocation.accuracy = accuracy;
-// };
-
-// var World = {
-	// init: function initFn() {
-	    // AR.context.onLocationChanged = World.onLocationChanged;
-	// },
-// 	
-	// onLocationChanged: function onLocationChangedFn(latitude, longitude, altitude, accuracy) {
-// 	
-	    // AR.context.onLocationChanged = null;
-// 	
-	    // World.createMarkerAtLocation(latitude + 0.01, longitude - 0.0005, altitude - 0.06);
-	// },
-//     
-    // createMarkerAtLocation: function createMarkerAtLocationFn(latitude, longitude, altitude) {
-// 	
-	    // var markerLocation = new AR.GeoLocation(latitude, longitude, altitude);
-	    // var markerDrawable = new AR.ImageDrawable(World.markerDrawable, 3);
-	    // var markerObject = new AR.GeoObject(markerLocation, {
-	        // drawables: {
-	            // cam: markerDrawable
-	        // }
-	    // });
-	// }	
-// };
-// 
-// World.init();
-
 var Overlays = {
 	existingLocations: [
 		[ 0     , 0     , 0],
 		
-		[ 0.0010,-0.0020, 0],
-		[ 0.0010,-0.0015, 0],
-		[ 0.0010,-0.0010, 0],
-		[ 0.0010,-0.0005, 0],
-		[ 0.0010, 0.0000, 0],
-		[ 0.0010, 0.0005, 0],
-		[ 0.0010, 0.0010, 0],
-		[ 0.0010, 0.0015, 0],
-		[ 0.0010, 0.0020, 0],
+		[ 0.00010,-0.00020, 0],
+		[ 0.00010,-0.00015, 0],
+		[ 0.00010,-0.00010, 0],
+		[ 0.00010,-0.00005, 0],
+		[ 0.00010, 0.00000, 0],
+		[ 0.00010, 0.00005, 0],
+		[ 0.00010, 0.00010, 0],
+		[ 0.00010, 0.00015, 0],
+		[ 0.00010, 0.00020, 0],
 		
-		[-0.0010,-0.0020, 0],
-		[-0.0010,-0.0015, 0],
-		[-0.0010,-0.0010, 0],
-		[-0.0010,-0.0005, 0],
-		[-0.0010, 0.0000, 0],
-		[-0.0010, 0.0005, 0],
-		[-0.0010, 0.0010, 0],
-		[-0.0010, 0.0015, 0],
-		[-0.0010, 0.0020, 0]
+		[-0.00010,-0.00020, 0],
+		[-0.00010,-0.00015, 0],
+		[-0.00010,-0.00010, 0],
+		[-0.00010,-0.00005, 0],
+		[-0.00010, 0.00000, 0],
+		[-0.00010, 0.00005, 0],
+		[-0.00010, 0.00010, 0],
+		[-0.00010, 0.00015, 0],
+		[-0.00010, 0.00020, 0]
 
 	],
 	
 	currentLocation: null,
-	
+	overlaySize: 5.5,
 	challengeOverlaysAdded: false, 
-	
 	challengeOverlayResource: new AR.ImageResource("assets/ChallengeOverlay100.png"),
-	
 	captureOverlayResource: new AR.ImageResource("assets/CaptureOverlay100.png"),
-	
 	existing: [],
+	challengeEnabled: true,
 	
 	init: function() {
 		// Set up callbacks
 		AR.context.onLocationChanged = Overlays.onLocationChanged;
-		AR.context.onScreenClick = Overlays.onScreenClick;
+		document.getElementById("captureButton").addEventListener("click", Overlays.onScreenClick);
+		var challengeButton = document.getElementById("challengeButton");
+		if (Overlays.challengeEnabled) {
+			challengeButton.className = "enabled";
+		} else {
+			challengeButton.className = "";
+		}
+		challengeButton.addEventListener("click", Overlays.toggleChallenge);
 	},
 	
 	onLocationChanged: function(latitude, longitude, altitude, accuracy) {
@@ -105,7 +77,7 @@ var Overlays = {
 	},
 	
 	createChallengeOverlays: function(latitude, longitude, altitude, accuracy) {
-		var scaleFactor = 1/60;
+		var scaleFactor = 1;
 		
 		for(var i = 0; i < Overlays.existingLocations.length; i++) {
 			var overlayLocation = new AR.GeoLocation(
@@ -114,23 +86,39 @@ var Overlays = {
 				altitude + Overlays.existingLocations[i][2] * scaleFactor
 			);
 			var overlayDrawable = new AR.ImageDrawable(
-				Overlays.challengeOverlayResource, 5.5, {
-				opacity: 0.5
-			});
+				Overlays.challengeOverlayResource, Overlays.overlaySize, {
+					opacity: 0.5
+				}
+			);
 			
     		var overlayObject = new AR.GeoObject(overlayLocation, {
     			drawables: {
 					cam: [overlayDrawable] 
-				}
+				},
+				enabled: Overlays.challengeEnabled
   			});
   			
     		Overlays.existing.push(overlayObject);
 		}
 	},
 	
+	toggleChallenge: function() {
+		Overlays.challengeEnabled = ! Overlays.challengeEnabled;
+		
+		if (Overlays.challengeEnabled) {
+			document.getElementById("challengeButton").className = "enabled";
+		} else {
+			document.getElementById("challengeButton").className = "";
+		}
+		
+		for(var i = 0; i < Overlays.existing.length; i++) {
+			Overlays.existing[i].enabled = Overlays.challengeEnabled;
+		}
+	},
+	
 	createCaptureOverlay: function(latitude, longitude, altitude) {
-		var overlayLocation = new AR.GeoLocation(latitude + Overlays.existingLocations[i][0], longitude + Overlays.existingLocations[i][1], altitude + Overlays.existingLocations[i][2]);
-		var overlayDrawable = new AR.ImageDrawable(Overlays.challengeOverlay, 5.5);
+		var overlayLocation = new AR.GeoLocation(latitude, longitude, altitude);
+		var overlayDrawable = new AR.ImageDrawable(Overlays.challengeOverlay, Overlays.overlaySize);
 		
 		var overlayObject = new AR.GeoObject(overlayLocation, {
 			drawables : { cam : [overlayDrawable] }

@@ -173,7 +173,7 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
     if (uri.host() == "button") {
     	switch( uri.query().getParamValue("action") ) {
 			case "captureScreen":
-				this.arview.captureScreen(true, null, { // "Path/In/Bundle/toImage.png"
+				this.arview.captureScreen(false, null, { // "Path/In/Bundle/toImage.png"
 		            onSuccess: function(path) {
 		                alert('success: ' + path);
 		            },
@@ -191,7 +191,6 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
 		}
     }
 };
-
 
 ARchitectWindow.prototype.onWindowOpen = function() {
 	var self = this;
