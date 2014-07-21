@@ -6,9 +6,7 @@ var currentLocation = {
 };
 
 var Overlays = {
-	existingLocations: [
-		[ 0     , 0     , 0],
-		
+	challengeOverlayLocations: [
 		[ 0.00010,-0.00020, 0],
 		[ 0.00010,-0.00015, 0],
 		[ 0.00010,-0.00010, 0],
@@ -30,13 +28,16 @@ var Overlays = {
 		[-0.00010, 0.00020, 0]
 
 	],
+	challengeOverlays: [],
+	
+	numCaptures: 0,
+	captureOverlays: [],
 	
 	currentLocation: null,
-	overlaySize: 5.5,
+	overlaySize: 10,
 	challengeOverlaysAdded: false, 
 	challengeOverlayResource: new AR.ImageResource("assets/ChallengeOverlay100.png"),
 	captureOverlayResource: new AR.ImageResource("assets/CaptureOverlay100.png"),
-	existing: [],
 	challengeEnabled: true,
 	
 	init: function() {
@@ -63,10 +64,10 @@ var Overlays = {
 		
 		// Update the current location
 		Overlays.currentLocation = {
-			"latitude": latitude,
+			"latitude":  latitude,
 			"longitude": longitude,
-			"altitude": altitude,
-			"accuracy": accuracy
+			"altitude":  altitude,
+			"accuracy":  accuracy
 		};
 	},
 	
@@ -74,16 +75,17 @@ var Overlays = {
 		console.log("Clicked the screen", Overlays.currentLocation);
 		// Take a screenshot
 		document.location = "architectsdk://button?action=captureScreen";
+		Overlays.createCaptureOverlay();
 	},
 	
 	createChallengeOverlays: function(latitude, longitude, altitude, accuracy) {
 		var scaleFactor = 1;
 		
-		for(var i = 0; i < Overlays.existingLocations.length; i++) {
+		for(var i = 0; i < Overlays.challengeOverlayLocations.length; i++) {
 			var overlayLocation = new AR.GeoLocation(
-				latitude + Overlays.existingLocations[i][0] * scaleFactor,
-				longitude + Overlays.existingLocations[i][1] * scaleFactor,
-				altitude + Overlays.existingLocations[i][2] * scaleFactor
+				latitude  + Overlays.challengeOverlayLocations[i][0] * scaleFactor,
+				longitude + Overlays.challengeOverlayLocations[i][1] * scaleFactor,
+				altitude  + Overlays.challengeOverlayLocations[i][2] * scaleFactor
 			);
 			var overlayDrawable = new AR.ImageDrawable(
 				Overlays.challengeOverlayResource, Overlays.overlaySize, {
@@ -98,8 +100,55 @@ var Overlays = {
 				enabled: Overlays.challengeEnabled
   			});
   			
-    		Overlays.existing.push(overlayObject);
+    		Overlays.challengeOverlays.push(overlayObject);
 		}
+		
+		Overlays.createChallengeOverlay3D(latitude, longitude, altitude, accuracy);
+	},
+	
+	createChallengeOverlay3D: function(latitude, longitude, altitude, accuracy) {
+		var scaleFactor = 1;
+		
+		var i = 0;
+		
+		var overlayLocation = new AR.GeoLocation(
+			latitude  + Overlays.challengeOverlayLocations[i][0] * scaleFactor,
+			longitude + Overlays.challengeOverlayLocations[i][1] * scaleFactor,
+			altitude  + Overlays.challengeOverlayLocations[i][2] * scaleFactor
+		);
+		
+		var model = new AR.Model("assets/ChallengeOverlay.wt3", {
+			// scales it to half of the original size
+			scale: {
+			    x: 2, 
+			    y: 2,
+			    z: 2
+			},
+			// rotates it 90 degrees around the z-axis and 180 degrees around the x-axis
+			rotate: {
+			    roll: 90.0,
+			    tilt: 180.0,
+			    heading: 0.0
+			},
+			// moves the 0bject 5 SDUs along the x- and the y-axis
+			translate: {
+			    x: 5,
+			    y: 5,
+			    z: 0
+			},
+			onClick : function() {
+			    //something happens
+			}
+		});
+		
+		var overlayObject = new AR.GeoObject(overlayLocation, {
+			drawables: {
+				cam: [model] 
+			},
+			enabled: Overlays.challengeEnabled
+		});
+		
+		Overlays.challengeOverlays.push(overlayObject);
 	},
 	
 	toggleChallenge: function() {
@@ -111,20 +160,39 @@ var Overlays = {
 			document.getElementById("challengeButton").className = "";
 		}
 		
-		for(var i = 0; i < Overlays.existing.length; i++) {
-			Overlays.existing[i].enabled = Overlays.challengeEnabled;
+		for(var i = 0; i < Overlays.challengeOverlays.length; i++) {
+			Overlays.challengeOverlays[i].enabled = Overlays.challengeEnabled;
 		}
 	},
 	
-	createCaptureOverlay: function(latitude, longitude, altitude) {
-		var overlayLocation = new AR.GeoLocation(latitude, longitude, altitude);
-		var overlayDrawable = new AR.ImageDrawable(Overlays.challengeOverlay, Overlays.overlaySize);
+	createCaptureOverlay: function() {
+		console.log("Creating capture overlay");
+		
+		if (Overlays.currentLocation === null) {
+			alert("An error occurred while capturing please try again.");
+			return;
+		}
+		
+		var overlayLocation = new AR.GeoLocation(
+			Overlays.currentLocation.latitude + 0.00010,
+			Overlays.currentLocation.longitude + -0.00020,
+			Overlays.currentLocation.altitude
+		);
+		
+		var overlayDrawable = new AR.ImageDrawable(
+			Overlays.captureOverlayResource, Overlays.overlaySize, {
+				opacity: 0.5
+			}
+		);
 		
 		var overlayObject = new AR.GeoObject(overlayLocation, {
-			drawables : { cam : [overlayDrawable] }
+			drawables: {
+				cam: [overlayDrawable] 
+			},
+			enabled: Overlays.challengeEnabled
 		});
 		
-		Overlays.existing.push(overlayObject);
+		Overlays.captureOverlays.push(overlayObject);
 	}
 };
 

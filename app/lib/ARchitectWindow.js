@@ -115,10 +115,10 @@ ARchitectWindow.prototype.configureWindow = function(window) {
         var includeWebView = true;
         window.arview.captureScreen(includeWebView, null, { // "Path/In/Bundle/toImage.png"
             onSuccess: function(path) {
-                alert('success: ' + path);
+                // alert('success: ' + path);
             },
             onError: function(errorDescription) {
-                alert('error: ' + errorDescription);
+                // alert('error: ' + errorDescription);
             }
         });
     });

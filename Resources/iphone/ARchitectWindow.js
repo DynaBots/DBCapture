@@ -77,12 +77,8 @@ ARchitectWindow.prototype.configureWindow = function(window) {
     captureButton.addEventListener("click", function() {
         var includeWebView = true;
         window.arview.captureScreen(includeWebView, null, {
-            onSuccess: function(path) {
-                alert("success: " + path);
-            },
-            onError: function(errorDescription) {
-                alert("error: " + errorDescription);
-            }
+            onSuccess: function() {},
+            onError: function() {}
         });
     });
     headView.add(captureButton);
