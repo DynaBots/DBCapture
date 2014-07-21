@@ -5,5 +5,5 @@
 
 $.index.open();
 
-var view = Alloy.createController("capture").getView();
-$.index.open(view);
+var capture = Alloy.createController("capture").getView();
+$.index.open(capture);

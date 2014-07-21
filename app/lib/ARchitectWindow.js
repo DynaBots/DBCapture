@@ -42,7 +42,6 @@ function ARchitectWindow(WikitudeLicenseKey, augmentedRealityMode, url) {
     this.window.util = util;
     this.window.locationListener = this.locationListener;
 
-
     this.configureWindow(this.window);
 
 
@@ -185,6 +184,9 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
 			case "close":
 				this.close();
 				break;
+			case "getHeading":
+				alert("I wish I could get the current heading.");
+				break;				
 			default:
 				alert("No valid action");
 				break;

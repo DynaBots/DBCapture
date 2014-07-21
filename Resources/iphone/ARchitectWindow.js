@@ -127,6 +127,10 @@ ARchitectWindow.prototype.onURLWasInvoked = function(event) {
         this.close();
         break;
 
+      case "getHeading":
+        alert("I wish I could get the current heading.");
+        break;
+
       default:
         alert("No valid action");
     }

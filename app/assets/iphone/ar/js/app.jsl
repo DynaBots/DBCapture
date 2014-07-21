@@ -36,8 +36,8 @@ var Overlays = {
 	currentLocation: null,
 	overlaySize: 10,
 	challengeOverlaysAdded: false, 
-	challengeOverlayResource: new AR.ImageResource("assets/ChallengeOverlay100.png"),
-	captureOverlayResource: new AR.ImageResource("assets/CaptureOverlay100.png"),
+	challengeOverlayResource: new AR.ImageResource("assets/Overlay.png"),
+	captureOverlayResource: new AR.ImageResource("assets/Overlay.png"),
 	challengeEnabled: true,
 	
 	init: function() {
@@ -67,15 +67,19 @@ var Overlays = {
 			"latitude":  latitude,
 			"longitude": longitude,
 			"altitude":  altitude,
-			"accuracy":  accuracy
+			"accuracy":  accuracy,
+			"heading": null
 		};
+		
+		// Get heading in a hilariously roundabout way
+		// document.location = "architectsdk://button?action=getHeading";
 	},
 	
 	onScreenClick: function() {
 		console.log("Clicked the screen", Overlays.currentLocation);
 		// Take a screenshot
 		document.location = "architectsdk://button?action=captureScreen";
-		Overlays.createCaptureOverlay();
+		// Overlays.createCaptureOverlay();
 	},
 	
 	createChallengeOverlays: function(latitude, longitude, altitude, accuracy) {
@@ -102,53 +106,6 @@ var Overlays = {
   			
     		Overlays.challengeOverlays.push(overlayObject);
 		}
-		
-		Overlays.createChallengeOverlay3D(latitude, longitude, altitude, accuracy);
-	},
-	
-	createChallengeOverlay3D: function(latitude, longitude, altitude, accuracy) {
-		var scaleFactor = 1;
-		
-		var i = 0;
-		
-		var overlayLocation = new AR.GeoLocation(
-			latitude  + Overlays.challengeOverlayLocations[i][0] * scaleFactor,
-			longitude + Overlays.challengeOverlayLocations[i][1] * scaleFactor,
-			altitude  + Overlays.challengeOverlayLocations[i][2] * scaleFactor
-		);
-		
-		var model = new AR.Model("assets/venus.wt3", {
-			// scales it to half of the original size
-			scale: {
-			    x: 2, 
-			    y: 2,
-			    z: 2
-			},
-			// rotates it 90 degrees around the z-axis and 180 degrees around the x-axis
-			rotate: {
-			    roll: 90.0,
-			    tilt: 180.0,
-			    heading: 0.0
-			},
-			// moves the 0bject 5 SDUs along the x- and the y-axis
-			translate: {
-			    x: 5,
-			    y: 5,
-			    z: 0
-			},
-			onClick : function() {
-			    //something happens
-			}
-		});
-		
-		var overlayObject = new AR.GeoObject(overlayLocation, {
-			drawables: {
-				cam: [model] 
-			},
-			enabled: Overlays.challengeEnabled
-		});
-		
-		Overlays.challengeOverlays.push(overlayObject);
 	},
 	
 	toggleChallenge: function() {
@@ -172,6 +129,9 @@ var Overlays = {
 			alert("An error occurred while capturing please try again.");
 			return;
 		}
+		
+		// Get compass heading in a hilariously roundabout way
+		document.location = "architectsdk://button?action=getHeading";
 		
 		var overlayLocation = new AR.GeoLocation(
 			Overlays.currentLocation.latitude + 0.00010,
